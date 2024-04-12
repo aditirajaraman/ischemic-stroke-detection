@@ -1,0 +1,106 @@
+# Source : https://www.geeksforgeeks.org/ml-label-encoding-of-datasets-in-python/
+# Label Encoding refers to converting the labels into a numeric form so as to convert them into the machine-readable form.
+# Encoding converted the Columns data Type 
+
+lbl=preprocessing.LabelEncoder()
+training_data['gender'] = lbl.fit_transform(training_data['gender'])
+training_data['ever_married'] = lbl.fit_transform(training_data['ever_married'])
+training_data['work_type'] = lbl.fit_transform(training_data['work_type'])
+training_data['Residence_type'] = lbl.fit_transform(training_data['Residence_type'])
+#training_data['smoking_status'] = lbl.fit_transform(training_data['smoking_status'])
+
+#Impute Values
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(strategy='most_frequent', missing_values=np.nan)
+imputer = imputer.fit(training_data[['smoking_status']])
+training_data['smoking_status'] = imputer.transform(training_data[['smoking_status']])
+
+training_data.head(5)
+training_data.info()
+
+print('--------------Categorical Counts of Missing Values ( Post Fix ) --------------------')
+print(training_data[categorical_vars].isnull().sum().sort_values(ascending=False))
+#training_data.head(25)
+
+
+
+#training_data.loc[ training_data['bmi'].isna() & training_data['stroke'] == 1] # returns all rows with bmi = NAN
+#rowCount = len(training_data.loc[training_data['bmi'].isna()].axes[0])
+#columnsCount = len(training_data.loc[training_data['bmi'].isna()].axes[1])
+#print(" RowCount:{} ColumnCount : {} of NAN bmi rows-----------".format(rowCount, columnsCount) )
+
+#>>>>>>>>>>>>>Check if Missing Values fixed<<<<<<<<<<<<<<<< 
+#print('--------------Numerical Counts of Missing Values ( Post Fix ) --------------------')
+#print(training_data[numeric_vars].isnull().sum().sort_values(ascending=False))
+#print(training_data[categorical_vars].isnull().sum().sort_values(ascending=False))
+
+
+
+-----------------------------------------------------3/16-----------------------------------------------------------
+# Standard Deviation for age, avg_glucose_level, bmi is very apart 
+training_data.describe()
+
+# apply Scaling- Standardization 
+from sklearn.preprocessing import StandardScaler
+
+# numerical features
+num_cols = ['age','avg_glucose_level', 'bmi']
+
+# apply standardization on numerical features
+for col in num_cols:
+    
+    # fit on training data column
+    scale = StandardScaler().fit(training_data[[col]])
+    
+    # transform the training data column
+    training_data[col] = scale.transform(training_data[[col]])
+
+
+
+#Check Collinearity 
+# Correlation heatmap
+plt.figure(figsize=(12, 10))
+heart_stroke_corr = training_data.corr()
+sns.heatmap(heart_stroke_corr,xticklabels=heart_stroke_corr.columns, yticklabels=heart_stroke_corr.columns, annot=True, annot_kws={"size": 7}, square=True)
+
+
+=====================================================3/27==========================================================
+def find_category_mappings(df, variable):
+    return {k: i for i, k in enumerate(df[variable].dropna().unique(), 0)}
+
+def integer_encode(df , variable, ordinal_mapping):
+    df[variable] = df[variable].map(ordinal_mapping)
+
+def imputation(df1 , cols):
+    df = df1.copy()
+    #Encoding dict &amp; Removing nan    
+    #mapStore = dict()
+    
+    #for variable in cols:
+    #    mappings = find_category_mappings(df, variable)
+    #    mapStore[variable] = mappings
+        
+    #Apply mapping
+    for variable in cols:
+        integer_encode(df, variable, mapStore[variable]) 
+        
+    #Minmaxscaler and KNN imputation 
+    sca = minMaxScaler.fit_transform(df)
+    knn_imputer = KNNImputer()
+    knn = knn_imputer.fit_transform(sca)
+    df.iloc[:,:] = minMaxScaler.inverse_transform(knn)
+    for i in df.columns : 
+        df[i] = round(df[i]).astype('int')
+    return df
+
+def mapCategories(df, cols):
+    for variable in cols:
+        mappings = find_category_mappings(df, variable)
+        mapStore[variable] = mappings
+
+def unMapCategories(df, cols):
+    #Inverse transform
+    for i in cols:
+        inv_map = {v: k for k, v in mapStore[i].items()}
+        df[i] = df[i].map(inv_map)
+    return df
