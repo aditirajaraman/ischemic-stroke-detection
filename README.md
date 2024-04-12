@@ -16,5 +16,8 @@ Machine Learning models are a multi-step process depicted in the below figure:
 - Handle Imbalanced Data, else you would have skewed models that will help detect target output that are biased towards the majority class of features.
 - Training Datasets need to be processed via multiple algorithms for determining best performance & accuracy. Also certain models depending on the nature of datasets will be more resilient to data anomalies.
 
+## Model Architecture
 ![alt text](DataSources/stroke-detection-architecture.png)
 
+## Machine Learning / Supervised Learning Model / Pre-Processing / Model Training
+![alt text](DataSources/mmodel-training.png)
