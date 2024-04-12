@@ -20,4 +20,10 @@ Machine Learning models are a multi-step process depicted in the below figure:
 ![alt text](DataSources/stroke-detection-architecture.png)
 
 ## Machine Learning / Supervised Learning Model / Pre-Processing / Model Training
-![alt text](DataSources/mmodel-training.png)
+![alt text](DataSources/model-training.png)
+
+## Model Accuracy
+![alt text](DataSources/model-accuracy.png)
+
+##  Confusion Matrix
+![alt text](DataSources/confusion-matrix.png)
